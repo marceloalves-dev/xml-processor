@@ -1,0 +1,6 @@
+@Tax_Document_Processor_HostAddress = http://localhost:5112
+
+GET {{Tax_Document_Processor_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

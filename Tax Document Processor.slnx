@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Application/Application.csproj" Id="b3cab3c3-acbc-4992-ac9c-e535b6709be3" />
+  <Project Path="Domain/Domain.csproj" Id="45ce965e-4d26-4502-9e65-e4b3e69cc6a3" />
+  <Project Path="Infrastructure/Infrastructure.csproj" Id="d2f182bd-d116-4ae4-8d1e-d99feacebd72" />
+  <Project Path="Tax Document Processor/Tax Document Processor.csproj" />
+  <Project Path="TaxDocumentProcessor.Test/TaxDocumentProcessor.Test.csproj" Id="58674bfc-da9c-40a4-beca-20d860380c41" />
+</Solution>
