@@ -8,9 +8,9 @@ namespace Tax_Document_Processor.Domain.Entities
 
         public Guid Id { get; private set; } = Guid.NewGuid();
 
-        public Cnpj CnpjEmit { get; private set; }
+        public CnpjOrCpf CnpjEmit { get; private set; }
 
-        public Cnpj CnpjDest { get; private set; }
+        public CnpjOrCpf CnpjDest { get; private set; }
 
         public string RazaoSocial { get; private set; }
 
@@ -26,8 +26,8 @@ namespace Tax_Document_Processor.Domain.Entities
         }
 
         protected NotaFiscal(
-        Cnpj cnpjEmit,
-        Cnpj cnpjDest,
+        CnpjOrCpf cnpjEmit,
+        CnpjOrCpf cnpjDest,
         string razaoSocial,
         ChaveNota chaveNota,
         string totalValue,

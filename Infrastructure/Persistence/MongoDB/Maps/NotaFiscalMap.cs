@@ -25,7 +25,7 @@ namespace Infrastructure.Persistence.MongoDB.Maps
                 });
 
                 BsonClassMap.RegisterClassMap<Nfe>();
-                BsonClassMap.RegisterClassMap<Nfce>();
+                BsonClassMap.RegisterClassMap<Cte>();
                 BsonClassMap.RegisterClassMap<Nfse>();
 
                 _registered = true;

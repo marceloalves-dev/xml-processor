@@ -6,8 +6,8 @@ namespace Tax_Document_Processor.Domain.Entities
     {
 
         public Nfse(
-        Cnpj cnpjEmit,
-        Cnpj cnpjDest,
+        CnpjOrCpf cnpjEmit,
+        CnpjOrCpf cnpjDest,
         string razaoSocial,
         ChaveNota chaveNota,
         string totalValue,

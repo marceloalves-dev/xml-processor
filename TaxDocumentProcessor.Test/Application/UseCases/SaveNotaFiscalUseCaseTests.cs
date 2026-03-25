@@ -21,8 +21,8 @@ namespace Tax_Document_Processor.Tests.Application.UseCases
             new("12345678901234567890123456789012345678901234");
 
         private static Nfe CreateNota() => new(
-            cnpjEmit: new Cnpj("11222333000181"),
-            cnpjDest: new Cnpj("11222333000181"),
+            cnpjEmit: new CnpjOrCpf("11222333000181"),
+            cnpjDest: new CnpjOrCpf("11222333000181"),
             razaoSocial: "Empresa Teste LTDA",
             chaveNota: Chave,
             totalValue: "1500.00",

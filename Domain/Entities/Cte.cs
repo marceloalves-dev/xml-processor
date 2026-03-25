@@ -2,11 +2,11 @@
 
 namespace Tax_Document_Processor.Domain.Entities
 {
-    public class Nfce : NotaFiscal
+    public class Cte : NotaFiscal
     {
-        public Nfce(
-        Cnpj cnpjEmit,
-        Cnpj cnpjDest,
+        public Cte(
+        CnpjOrCpf cnpjEmit,
+        CnpjOrCpf cnpjDest,
         string razaoSocial,
         ChaveNota chaveNota,
         string totalValue,

@@ -28,8 +28,8 @@ namespace Tax_Document_Processor.Tests.Application.UseCases
         {
             // Arrange
             var nota = new Nfe(
-                cnpjEmit: new Cnpj("11222333000181"),
-                cnpjDest: new Cnpj("11222333000181"),
+                cnpjEmit: new CnpjOrCpf("11222333000181"),
+                cnpjDest: new CnpjOrCpf("11222333000181"),
                 razaoSocial: "Empresa Teste LTDA",
                 chaveNota: Chave,
                 totalValue: "1500.00",

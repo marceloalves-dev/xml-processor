@@ -5,8 +5,8 @@ namespace Tax_Document_Processor.Domain.Entities
     public class Nfe : NotaFiscal
     {
         public Nfe(
-        Cnpj cnpjEmit,
-        Cnpj cnpjDest,
+        CnpjOrCpf cnpjEmit,
+        CnpjOrCpf cnpjDest,
         string razaoSocial,
         ChaveNota chaveNota,
         string totalValue,
