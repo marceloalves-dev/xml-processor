@@ -22,7 +22,7 @@ namespace Tax_Document_Processor.Infrastructure.XmlLib
         private Nfe ConvertNfe(string xmlContent)
         {
             var doc = XDocument.Parse(xmlContent);
-            var ns = "http://www.portalfiscal.inf.br/nfe";
+            XNamespace ns = "http://www.portalfiscal.inf.br/nfe";
 
             var infNFe = doc.Descendants(ns + "infNFe").First();
             var emit = infNFe.Element(ns + "emit")!;
@@ -49,7 +49,7 @@ namespace Tax_Document_Processor.Infrastructure.XmlLib
         private Nfse ConvertNfse(string xmlContent)
         {
             var doc = XDocument.Parse(xmlContent);
-            var ns = "http://www.sped.fazenda.gov.br/nfse";
+            XNamespace ns = "http://www.sped.fazenda.gov.br/nfse";
 
             var infNFSe = doc.Descendants(ns + "infNFSe").First();
             var emit = infNFSe.Element(ns + "emit")!;
@@ -75,7 +75,7 @@ namespace Tax_Document_Processor.Infrastructure.XmlLib
         private Cte ConvertCte(string xmlContent)
         {
             var doc = XDocument.Parse(xmlContent);
-            var ns = "http://www.portalfiscal.inf.br/cte";
+            XNamespace ns = "http://www.portalfiscal.inf.br/cte";
 
             var infCte = doc.Descendants(ns + "infCte").First();
             var emit = infCte.Element(ns + "emit")!;
