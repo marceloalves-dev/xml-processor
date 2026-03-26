@@ -2,6 +2,9 @@ namespace Tax_Document_Processor.Domain.ValueObjects
 {
     public class CnpjOrCpf
     {
+        private static readonly int[] CnpjWeights1 = { 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
+        private static readonly int[] CnpjWeights2 = { 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
+
         public string Value { get; private set; }
         public bool IsCpf { get; private set; }
 
@@ -25,23 +28,35 @@ namespace Tax_Document_Processor.Domain.ValueObjects
             }
         }
 
-        private static string Clean(string value) =>
-            new string(value.Where(char.IsDigit).ToArray());
+        private static string Clean(string value)
+        {
+            var buffer = new char[value.Length];
+            var count = 0;
+            foreach (var c in value)
+            {
+                if (char.IsDigit(c))
+                    buffer[count++] = c;
+            }
+            return new string(buffer, 0, count);
+        }
 
         private static bool IsValidCpf(string cpf)
         {
-            if (cpf.Distinct().Count() == 1)
-                return false;
+            var first = cpf[0];
+            for (var i = 1; i < 11; i++)
+            {
+                if (cpf[i] != first) break;
+                if (i == 10) return false;
+            }
 
             return ValidateCpfDigit(cpf, 9) && ValidateCpfDigit(cpf, 10);
         }
 
         private static bool ValidateCpfDigit(string cpf, int position)
         {
-            var sum = cpf
-                .Take(position)
-                .Select((c, i) => (c - '0') * (position + 1 - i))
-                .Sum();
+            var sum = 0;
+            for (var i = 0; i < position; i++)
+                sum += (cpf[i] - '0') * (position + 1 - i);
 
             var remainder = (sum * 10) % 11;
             var expectedDigit = remainder == 10 ? 0 : remainder;
@@ -51,22 +66,23 @@ namespace Tax_Document_Processor.Domain.ValueObjects
 
         private static bool IsValidCnpj(string cnpj)
         {
-            if (cnpj.Distinct().Count() == 1)
-                return false;
+            var first = cnpj[0];
+            for (var i = 1; i < 14; i++)
+            {
+                if (cnpj[i] != first) break;
+                if (i == 13) return false;
+            }
 
             return ValidateCnpjDigit(cnpj, 12) && ValidateCnpjDigit(cnpj, 13);
         }
 
         private static bool ValidateCnpjDigit(string cnpj, int position)
         {
-            int[] multipliers = position == 12
-                ? new[] { 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 }
-                : new[] { 6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
+            var weights = position == 12 ? CnpjWeights1 : CnpjWeights2;
 
-            var sum = cnpj
-                .Take(position)
-                .Select((c, i) => (c - '0') * multipliers[i])
-                .Sum();
+            var sum = 0;
+            for (var i = 0; i < position; i++)
+                sum += (cnpj[i] - '0') * weights[i];
 
             var remainder = sum % 11;
             var expectedDigit = remainder < 2 ? 0 : 11 - remainder;

@@ -45,5 +45,13 @@ namespace Tax_Document_Processor.Domain.Entities
 
         public abstract void Validate();
 
+        public void Update(string? razaoSocial, string? totalValue)
+        {
+            if (razaoSocial is not null)
+                RazaoSocial = razaoSocial;
+            if (totalValue is not null)
+                TotalValue = totalValue;
+        }
+
     }
 }

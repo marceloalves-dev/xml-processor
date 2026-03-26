@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using Tax_Document_Processor.Domain.Entities;
 using Tax_Document_Processor.Domain.ValueObjects;
 
@@ -6,17 +6,24 @@ namespace Tax_Document_Processor.Domain.Repositories
 {
     public interface INotaFiscalRepository
     {
-        Task SaveAsync(NotaFiscal nota);
+        /// <returns>true if inserted, false if already existed (duplicate key)</returns>
+        Task<bool> SaveAsync(NotaFiscal nota, CancellationToken cancellationToken = default);
 
-        Task<NotaFiscal?> GetByKeyAsync(ChaveNota chave);
+        Task<NotaFiscal?> GetByKeyAsync(ChaveNota chave, CancellationToken cancellationToken = default);
 
-        Task DeleteAsync(ChaveNota chave);
+        /// <returns>true if deleted, false if not found</returns>
+        Task<bool> DeleteAsync(ChaveNota chave, CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<NotaFiscal>> ListAsync(
+        Task<List<NotaFiscal>> ListAsync(
             Expression<Func<NotaFiscal, bool>>? filter = null,
-            int page = 1, int pageSize = 20);
+            int page = 1, int pageSize = 20,
+            CancellationToken cancellationToken = default);
 
-        Task<long> CountAsync(Expression<Func<NotaFiscal, bool>>? filter = null);
+        Task<long> CountAsync(Expression<Func<NotaFiscal, bool>>? filter = null,
+            CancellationToken cancellationToken = default);
 
+        Task UpdateAsync(ChaveNota chave, NotaFiscal nota, CancellationToken cancellationToken = default);
+
+        Task EnsureIndexesAsync();
     }
 }

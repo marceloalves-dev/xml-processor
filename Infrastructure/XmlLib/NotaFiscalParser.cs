@@ -1,4 +1,4 @@
-﻿using System.Xml.Linq;
+using System.Xml.Linq;
 using Tax_Document_Processor.Application.Services;
 using Tax_Document_Processor.Domain.Entities;
 using Tax_Document_Processor.Domain.ValueObjects;
@@ -9,19 +9,19 @@ namespace Tax_Document_Processor.Infrastructure.XmlLib
     {
         public NotaFiscal Parse(string xmlContent)
         {
-            var root = XDocument.Parse(xmlContent).Root!.Name.LocalName;
+            var doc = XDocument.Parse(xmlContent);
+            var root = doc.Root!.Name.LocalName;
 
             return root switch
             {
-                "nfeProc" or "NFe" => ConvertNfe(xmlContent),
-                "cteProc" or "CTe" => ConvertCte(xmlContent),
-                _ => ConvertNfse(xmlContent)
+                "nfeProc" or "NFe" => ConvertNfe(doc),
+                "cteProc" or "CTe" => ConvertCte(doc),
+                _ => ConvertNfse(doc)
             };
         }
 
-        private Nfe ConvertNfe(string xmlContent)
+        private Nfe ConvertNfe(XDocument doc)
         {
-            var doc = XDocument.Parse(xmlContent);
             XNamespace ns = "http://www.portalfiscal.inf.br/nfe";
 
             var infNFe = doc.Descendants(ns + "infNFe").First();
@@ -46,9 +46,8 @@ namespace Tax_Document_Processor.Infrastructure.XmlLib
                 dtEmission: dtEmission);
         }
 
-        private Nfse ConvertNfse(string xmlContent)
+        private Nfse ConvertNfse(XDocument doc)
         {
-            var doc = XDocument.Parse(xmlContent);
             XNamespace ns = "http://www.sped.fazenda.gov.br/nfse";
 
             var infNFSe = doc.Descendants(ns + "infNFSe").First();
@@ -72,9 +71,8 @@ namespace Tax_Document_Processor.Infrastructure.XmlLib
                 dtEmission: dtEmission);
         }
 
-        private Cte ConvertCte(string xmlContent)
+        private Cte ConvertCte(XDocument doc)
         {
-            var doc = XDocument.Parse(xmlContent);
             XNamespace ns = "http://www.portalfiscal.inf.br/cte";
 
             var infCte = doc.Descendants(ns + "infCte").First();

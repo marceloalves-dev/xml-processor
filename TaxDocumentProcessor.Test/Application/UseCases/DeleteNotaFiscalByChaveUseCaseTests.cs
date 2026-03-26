@@ -24,18 +24,10 @@ namespace Tax_Document_Processor.Tests.Application.UseCases
         }
 
         [Test]
-        public async Task ShouldDeleteNotaFiscal_WhenChaveExists()
+        public async Task ShouldCallDeleteAsync_WithCorrectChave()
         {
             // Arrange
-            var nota = new Nfe(
-                cnpjEmit: new CnpjOrCpf("11222333000181"),
-                cnpjDest: new CnpjOrCpf("11222333000181"),
-                razaoSocial: "Empresa Teste LTDA",
-                chaveNota: Chave,
-                totalValue: "1500.00",
-                dtEmission: new DateTime(2025, 1, 10));
-
-            _repository.GetByKeyAsync(Chave).Returns(nota);
+            _repository.DeleteAsync(Chave).Returns(true);
 
             // Act
             await _useCase.ExecuteAsync(Chave);
@@ -48,7 +40,7 @@ namespace Tax_Document_Processor.Tests.Application.UseCases
         public async Task ShouldThrowException_WhenChaveDoesNotExist()
         {
             // Arrange
-            _repository.GetByKeyAsync(Chave).Returns((NotaFiscal?)null);
+            _repository.DeleteAsync(Chave).Returns(false);
 
             // Act
             var act = async () => await _useCase.ExecuteAsync(Chave);
@@ -59,17 +51,16 @@ namespace Tax_Document_Processor.Tests.Application.UseCases
         }
 
         [Test]
-        public async Task ShouldNotCallDelete_WhenChaveDoesNotExist()
+        public async Task ShouldNotCallGetByKeyAsync()
         {
             // Arrange
-            _repository.GetByKeyAsync(Chave).Returns((NotaFiscal?)null);
+            _repository.DeleteAsync(Chave).Returns(true);
 
             // Act
-            var act = async () => await _useCase.ExecuteAsync(Chave);
-            await act.Should().ThrowAsync<Exception>();
+            await _useCase.ExecuteAsync(Chave);
 
-            // Assert
-            await _repository.DidNotReceive().DeleteAsync(Arg.Any<ChaveNota>());
+            // Assert — N+1 eliminado: não faz GET antes do DELETE
+            await _repository.DidNotReceive().GetByKeyAsync(Arg.Any<ChaveNota>());
         }
     }
 }

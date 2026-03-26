@@ -1,4 +1,4 @@
-﻿using Tax_Document_Processor.Domain.Entities;
+using Tax_Document_Processor.Domain.Entities;
 using Tax_Document_Processor.Domain.Repositories;
 using Tax_Document_Processor.Domain.ValueObjects;
 
@@ -13,9 +13,9 @@ namespace Application.UseCases.NotaFiscalCases
             _repository = repository;
         }
 
-        public async Task<NotaFiscal?> ExecuteAsync(ChaveNota chaveNota)
+        public async Task<NotaFiscal?> ExecuteAsync(ChaveNota chaveNota, CancellationToken cancellationToken = default)
         {
-            return await _repository.GetByKeyAsync(chaveNota);
+            return await _repository.GetByKeyAsync(chaveNota, cancellationToken);
         }
     }
 }

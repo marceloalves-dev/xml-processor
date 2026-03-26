@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 
 namespace Tax_Document_Processor.Infrastructure.Persistence.MongoDB
@@ -7,13 +7,9 @@ namespace Tax_Document_Processor.Infrastructure.Persistence.MongoDB
     {
         private readonly IMongoDatabase _database;
 
-        public MongoDbContext(IConfiguration configuration)
+        public MongoDbContext(IMongoClient mongoClient, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("MongoDB");
-            var databaseName = configuration["MongoDB:DatabaseName"];
-
-            var client = new MongoClient(connectionString);
-            _database = client.GetDatabase(databaseName);
+            _database = mongoClient.GetDatabase(configuration["MongoDB:DatabaseName"]);
         }
 
         public IMongoCollection<T> GetCollection<T>(string collectionName)

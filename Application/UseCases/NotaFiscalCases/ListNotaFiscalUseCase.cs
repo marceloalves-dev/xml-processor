@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+using Application.DTOs;
 using System.Linq.Expressions;
 using Tax_Document_Processor.Domain.Entities;
 using Tax_Document_Processor.Domain.Repositories;
@@ -14,25 +14,24 @@ namespace Application.UseCases.NotaFiscalCases
             _repository = repository;
         }
 
-
-        public async Task<PagedResultDto<NotaFiscal>> ExecuteAsync(NotaFiscalFilterDto filtro)
+        public async Task<PagedResultDto<NotaFiscal>> ExecuteAsync(NotaFiscalFilterDto filtro, CancellationToken cancellationToken = default)
         {
             Expression<Func<NotaFiscal, bool>> filter = x =>
                     (!filtro.DtEmission.HasValue || x.DtEmission == filtro.DtEmission) &&
                     (string.IsNullOrEmpty(filtro.RazaoSocial) || x.RazaoSocial == filtro.RazaoSocial) &&
                     (filtro.CnpjEmit == null || x.CnpjEmit == filtro.CnpjEmit);
 
-            var items = await _repository.ListAsync(filter, filtro.Page, filtro.PageSize);
-            var total = await _repository.CountAsync(filter);
+            var itemsTask = _repository.ListAsync(filter, filtro.Page, filtro.PageSize, cancellationToken);
+            var totalTask = _repository.CountAsync(filter, cancellationToken);
+            await Task.WhenAll(itemsTask, totalTask);
 
             return new PagedResultDto<NotaFiscal>
             {
-                Items = items,
+                Items = itemsTask.Result,
                 Page = filtro.Page,
                 PageSize = filtro.PageSize,
-                Total = total
+                Total = totalTask.Result
             };
         }
     }
 }
-

@@ -65,7 +65,7 @@ namespace Tax_Document_Processor.Tests.Application.UseCases
 
             _repository
                 .ListAsync(Arg.Any<Expression<Func<NotaFiscal, bool>>>(), Arg.Any<int>(), Arg.Any<int>())
-                .Returns(Enumerable.Empty<NotaFiscal>());
+                .Returns(new List<NotaFiscal>());
             _repository
                 .CountAsync(Arg.Any<Expression<Func<NotaFiscal, bool>>>())
                 .Returns(0);
@@ -88,7 +88,7 @@ namespace Tax_Document_Processor.Tests.Application.UseCases
 
             _repository
                 .ListAsync(Arg.Any<Expression<Func<NotaFiscal, bool>>>(), Arg.Any<int>(), Arg.Any<int>())
-                .Returns(Enumerable.Empty<NotaFiscal>());
+                .Returns(new List<NotaFiscal>());
             _repository
                 .CountAsync(Arg.Any<Expression<Func<NotaFiscal, bool>>>())
                 .Returns(0);

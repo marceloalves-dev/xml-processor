@@ -1,4 +1,4 @@
-﻿using Tax_Document_Processor.Application.Services;
+using Tax_Document_Processor.Application.Services;
 using Tax_Document_Processor.Domain.Repositories;
 
 namespace Application.UseCases.NotaFiscalCases
@@ -8,7 +8,6 @@ namespace Application.UseCases.NotaFiscalCases
         private readonly INotaFiscalRepository _repository;
         private readonly INotaFiscalParser _notaFiscalParser;
 
-
         public SaveNotaFiscalUseCase(INotaFiscalRepository repository, INotaFiscalParser notaFiscalParser)
         {
             _repository = repository;
@@ -16,15 +15,10 @@ namespace Application.UseCases.NotaFiscalCases
         }
 
         /// <returns>true if saved, false if already existed</returns>
-        public async Task<bool> ExecuteAsync(string xml)
+        public async Task<bool> ExecuteAsync(string xml, CancellationToken cancellationToken = default)
         {
             var notaFiscal = _notaFiscalParser.Parse(xml);
-
-            if (await _repository.GetByKeyAsync(notaFiscal.ChaveNota) != null)
-                return false;
-
-            await _repository.SaveAsync(notaFiscal);
-            return true;
+            return await _repository.SaveAsync(notaFiscal, cancellationToken);
         }
 
     }

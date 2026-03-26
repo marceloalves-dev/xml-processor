@@ -37,35 +37,48 @@ namespace Tax_Document_Processor.Tests.Application.UseCases
         }
 
         [Test]
-        public async Task ShouldSaveNotaFiscal_AndReturnTrue_WhenItDoesNotExist()
+        public async Task ShouldReturnTrue_WhenSaveSucceeds()
         {
             // Arrange
             var nota = CreateNota();
             _parser.Parse(XmlContent).Returns(nota);
-            _repository.GetByKeyAsync(Chave).Returns((NotaFiscal?)null);
+            _repository.SaveAsync(nota).Returns(true);
 
             // Act
             var result = await _useCase.ExecuteAsync(XmlContent);
 
             // Assert
-            await _repository.Received(1).SaveAsync(nota);
             result.Should().BeTrue();
         }
 
         [Test]
-        public async Task ShouldNotSave_AndReturnFalse_WhenNotaAlreadyExists()
+        public async Task ShouldReturnFalse_WhenDocumentAlreadyExists()
         {
             // Arrange
             var nota = CreateNota();
             _parser.Parse(XmlContent).Returns(nota);
-            _repository.GetByKeyAsync(Chave).Returns(nota);
+            _repository.SaveAsync(nota).Returns(false);
 
             // Act
             var result = await _useCase.ExecuteAsync(XmlContent);
 
             // Assert
-            await _repository.DidNotReceive().SaveAsync(Arg.Any<NotaFiscal>());
             result.Should().BeFalse();
+        }
+
+        [Test]
+        public async Task ShouldCallSaveAsync_WithParsedNota()
+        {
+            // Arrange
+            var nota = CreateNota();
+            _parser.Parse(XmlContent).Returns(nota);
+            _repository.SaveAsync(nota).Returns(true);
+
+            // Act
+            await _useCase.ExecuteAsync(XmlContent);
+
+            // Assert
+            await _repository.Received(1).SaveAsync(nota);
         }
 
         [Test]
@@ -74,13 +87,28 @@ namespace Tax_Document_Processor.Tests.Application.UseCases
             // Arrange
             var nota = CreateNota();
             _parser.Parse(XmlContent).Returns(nota);
-            _repository.GetByKeyAsync(Chave).Returns((NotaFiscal?)null);
+            _repository.SaveAsync(nota).Returns(true);
 
             // Act
             await _useCase.ExecuteAsync(XmlContent);
 
             // Assert
             _parser.Received(1).Parse(XmlContent);
+        }
+
+        [Test]
+        public async Task ShouldNotCallGetByKeyAsync()
+        {
+            // Arrange
+            var nota = CreateNota();
+            _parser.Parse(XmlContent).Returns(nota);
+            _repository.SaveAsync(nota).Returns(true);
+
+            // Act
+            await _useCase.ExecuteAsync(XmlContent);
+
+            // Assert — N+1 eliminado: não faz GET antes do INSERT
+            await _repository.DidNotReceive().GetByKeyAsync(Arg.Any<ChaveNota>());
         }
     }
 }

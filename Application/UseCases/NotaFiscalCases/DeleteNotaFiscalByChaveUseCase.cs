@@ -1,4 +1,4 @@
-﻿using Tax_Document_Processor.Domain.Repositories;
+using Tax_Document_Processor.Domain.Repositories;
 using Tax_Document_Processor.Domain.ValueObjects;
 
 namespace Application.UseCases.NotaFiscalCases
@@ -12,14 +12,12 @@ namespace Application.UseCases.NotaFiscalCases
             _repository = repository;
         }
 
-        public async Task ExecuteAsync(ChaveNota chaveNota)
+        public async Task ExecuteAsync(ChaveNota chaveNota, CancellationToken cancellationToken = default)
         {
-            var nota = await _repository.GetByKeyAsync(chaveNota);
+            var deleted = await _repository.DeleteAsync(chaveNota, cancellationToken);
 
-            if (nota is null)
+            if (!deleted)
                 throw new Exception("Nota fiscal não encontrada");
-
-            await _repository.DeleteAsync(chaveNota);
         }
     }
 }

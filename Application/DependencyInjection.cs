@@ -11,6 +11,7 @@ namespace Application
             services.AddScoped<GetNotaFiscalByChaveUseCase>();
             services.AddScoped<DeleteNotaFiscalByChaveUseCase>();
             services.AddScoped<ListNotaFiscalUseCase>();
+            services.AddScoped<UpdateNotaFiscalUseCase>();
             return services;
         }
     }
