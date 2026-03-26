@@ -29,8 +29,8 @@ namespace Tax_Document_Processor.API.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveAsync([FromBody] string xmlContent)
         {
-            await _saveUseCase.ExecuteAsync(xmlContent);
-            return Ok();
+            var saved = await _saveUseCase.ExecuteAsync(xmlContent);
+            return saved ? StatusCode(201) : Ok();
         }
 
         [HttpGet("{chave}")]

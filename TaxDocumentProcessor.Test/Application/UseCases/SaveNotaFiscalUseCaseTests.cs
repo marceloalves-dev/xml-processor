@@ -37,7 +37,7 @@ namespace Tax_Document_Processor.Tests.Application.UseCases
         }
 
         [Test]
-        public async Task ShouldSaveNotaFiscal_WhenItDoesNotExist()
+        public async Task ShouldSaveNotaFiscal_AndReturnTrue_WhenItDoesNotExist()
         {
             // Arrange
             var nota = CreateNota();
@@ -45,14 +45,15 @@ namespace Tax_Document_Processor.Tests.Application.UseCases
             _repository.GetByKeyAsync(Chave).Returns((NotaFiscal?)null);
 
             // Act
-            await _useCase.ExecuteAsync(XmlContent);
+            var result = await _useCase.ExecuteAsync(XmlContent);
 
             // Assert
             await _repository.Received(1).SaveAsync(nota);
+            result.Should().BeTrue();
         }
 
         [Test]
-        public async Task ShouldNotSave_WhenNotaAlreadyExists()
+        public async Task ShouldNotSave_AndReturnFalse_WhenNotaAlreadyExists()
         {
             // Arrange
             var nota = CreateNota();
@@ -60,10 +61,11 @@ namespace Tax_Document_Processor.Tests.Application.UseCases
             _repository.GetByKeyAsync(Chave).Returns(nota);
 
             // Act
-            await _useCase.ExecuteAsync(XmlContent);
+            var result = await _useCase.ExecuteAsync(XmlContent);
 
             // Assert
             await _repository.DidNotReceive().SaveAsync(Arg.Any<NotaFiscal>());
+            result.Should().BeFalse();
         }
 
         [Test]

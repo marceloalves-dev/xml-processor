@@ -1,0 +1,207 @@
+openapi: 3.0.3
+info:
+  title: XML Processor
+  description: >
+    REST API for processing Brazilian fiscal documents (NF-e, NFC-e, NFS-e)
+    from XML. Supports saving, querying, listing and deleting fiscal documents
+    stored in MongoDB.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:5112
+    description: Local HTTP
+  - url: https://localhost:7259
+    description: Local HTTPS
+
+tags:
+  - name: NotaFiscal
+    description: Operations for fiscal document management
+
+paths:
+  /api/notafiscal:
+    post:
+      tags: [NotaFiscal]
+      summary: Upload and save a fiscal document from XML
+      description: >
+        Parses the provided XML string, detects the document type (NF-e, CT-e or NFS-e)
+        and persists it. If a document with the same access key already exists, the request
+        is silently ignored (idempotent).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+            example: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><nfeProc versao=\"4.00\" xmlns=\"http://www.portalfiscal.inf.br/nfe\">...</nfeProc>"
+      responses:
+        "201":
+          description: Document parsed and saved successfully
+        "200":
+          description: Document already exists, no action taken
+        "400":
+          description: Invalid XML or failed document validation
+        "500":
+          description: Internal server error
+
+    get:
+      tags: [NotaFiscal]
+      summary: List fiscal documents with filters and pagination
+      parameters:
+        - name: cnpjEmit
+          in: query
+          required: false
+          description: Issuer CNPJ (digits only or formatted)
+          schema:
+            type: string
+            example: "14002097000186"
+        - name: razaoSocial
+          in: query
+          required: false
+          description: Exact company name of the issuer
+          schema:
+            type: string
+            example: "TRANSPORTES MAROSO LTDA"
+        - name: dtEmission
+          in: query
+          required: false
+          description: Emission date filter (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+            example: "2026-03-03T04:55:53-03:00"
+        - name: page
+          in: query
+          required: false
+          description: Page number (1-based)
+          schema:
+            type: integer
+            default: 1
+            example: 1
+        - name: pageSize
+          in: query
+          required: false
+          description: Number of items per page
+          schema:
+            type: integer
+            default: 20
+            example: 20
+      responses:
+        "200":
+          description: Paginated list of fiscal documents
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PagedResultNotaFiscal"
+        "500":
+          description: Internal server error
+
+  /api/notafiscal/{chave}:
+    get:
+      tags: [NotaFiscal]
+      summary: Get a fiscal document by access key
+      parameters:
+        - name: chave
+          in: path
+          required: true
+          description: 44-digit access key (NF-e / CT-e) or 50-digit key (NFS-e)
+          schema:
+            type: string
+            example: "35260305366953000272570030002455531798691955"
+      responses:
+        "200":
+          description: Fiscal document found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotaFiscal"
+        "404":
+          description: Document not found
+        "500":
+          description: Internal server error
+
+    delete:
+      tags: [NotaFiscal]
+      summary: Delete a fiscal document by access key
+      parameters:
+        - name: chave
+          in: path
+          required: true
+          description: 44-digit access key (NF-e / CT-e) or 50-digit key (NFS-e)
+          schema:
+            type: string
+            example: "35260305366953000272570030002455531798691955"
+      responses:
+        "204":
+          description: Document deleted successfully
+        "404":
+          description: Document not found
+        "500":
+          description: Internal server error
+
+components:
+  schemas:
+    NotaFiscal:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        cnpjEmit:
+          $ref: "#/components/schemas/CnpjOrCpf"
+        cnpjDest:
+          $ref: "#/components/schemas/CnpjOrCpf"
+        razaoSocial:
+          type: string
+          example: "TRANSPORTES MAROSO LTDA"
+        chaveNota:
+          $ref: "#/components/schemas/ChaveNota"
+        totalValue:
+          type: string
+          example: "121.41"
+        dtEmission:
+          type: string
+          format: date-time
+          example: "2026-03-03T04:55:53-03:00"
+
+    CnpjOrCpf:
+      type: object
+      properties:
+        value:
+          type: string
+          description: Digits only — 14 digits for CNPJ or 11 digits for CPF
+          example: "05366953000272"
+        isCpf:
+          type: boolean
+          description: True if the document is a CPF (individual), false if CNPJ (company)
+          example: false
+
+    ChaveNota:
+      type: object
+      properties:
+        value:
+          type: string
+          description: 44 digits for NF-e / CT-e, 50 digits for NFS-e
+          example: "35260305366953000272570030002455531798691955"
+        isNfse:
+          type: boolean
+          description: True if this is a NFS-e key (50 digits)
+          example: false
+
+    PagedResultNotaFiscal:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/NotaFiscal"
+        page:
+          type: integer
+          example: 1
+        pageSize:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          format: int64
+          example: 42

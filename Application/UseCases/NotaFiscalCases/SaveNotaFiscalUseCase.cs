@@ -15,14 +15,16 @@ namespace Application.UseCases.NotaFiscalCases
             _notaFiscalParser = notaFiscalParser;
         }
 
-        public async Task ExecuteAsync(string xml)
+        /// <returns>true if saved, false if already existed</returns>
+        public async Task<bool> ExecuteAsync(string xml)
         {
             var notaFiscal = _notaFiscalParser.Parse(xml);
 
             if (await _repository.GetByKeyAsync(notaFiscal.ChaveNota) != null)
-                return;
+                return false;
 
             await _repository.SaveAsync(notaFiscal);
+            return true;
         }
 
     }
