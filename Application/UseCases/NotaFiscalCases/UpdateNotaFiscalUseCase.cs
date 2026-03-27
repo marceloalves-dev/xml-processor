@@ -1,5 +1,4 @@
 using Application.DTOs;
-using Tax_Document_Processor.Domain.Entities;
 using Tax_Document_Processor.Domain.Repositories;
 using Tax_Document_Processor.Domain.ValueObjects;
 
@@ -14,7 +13,7 @@ namespace Application.UseCases.NotaFiscalCases
             _repository = repository;
         }
 
-        public async Task<NotaFiscal?> ExecuteAsync(ChaveNota chave, UpdateNotaFiscalRequest request, CancellationToken cancellationToken = default)
+        public async Task<NotaFiscalResponseDto?> ExecuteAsync(ChaveNota chave, UpdateNotaFiscalRequest request, CancellationToken cancellationToken = default)
         {
             var nota = await _repository.GetByKeyAsync(chave, cancellationToken);
 
@@ -23,7 +22,7 @@ namespace Application.UseCases.NotaFiscalCases
 
             nota.Update(request.RazaoSocial, request.TotalValue);
             await _repository.UpdateAsync(chave, nota, cancellationToken);
-            return nota;
+            return NotaFiscalResponseDto.From(nota);
         }
     }
 }

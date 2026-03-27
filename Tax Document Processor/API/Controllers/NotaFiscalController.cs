@@ -30,7 +30,8 @@ namespace Tax_Document_Processor.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SaveAsync([FromBody] string xmlContent, CancellationToken cancellationToken)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> SaveAsync([FromForm] string xmlContent, CancellationToken cancellationToken)
         {
             var saved = await _saveUseCase.ExecuteAsync(xmlContent, cancellationToken);
             return saved ? StatusCode(201) : Ok();

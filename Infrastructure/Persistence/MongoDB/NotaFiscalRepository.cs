@@ -12,7 +12,7 @@ namespace Tax_Document_Processor.Infrastructure.Persistence.MongoDB
 
         public NotaFiscalRepository(MongoDbContext context)
         {
-            _collection = context.GetCollection<NotaFiscal>("notas_fiscais");
+            _collection = context.GetCollection<NotaFiscal>("fiscal_documents");
         }
 
         public async Task<bool> SaveAsync(NotaFiscal nota, CancellationToken cancellationToken = default)

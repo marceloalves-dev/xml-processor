@@ -14,7 +14,7 @@ namespace Application.UseCases.NotaFiscalCases
             _repository = repository;
         }
 
-        public async Task<PagedResultDto<NotaFiscal>> ExecuteAsync(NotaFiscalFilterDto filtro, CancellationToken cancellationToken = default)
+        public async Task<PagedResultDto<NotaFiscalResponseDto>> ExecuteAsync(NotaFiscalFilterDto filtro, CancellationToken cancellationToken = default)
         {
             Expression<Func<NotaFiscal, bool>> filter = x =>
                     (!filtro.DtEmission.HasValue || x.DtEmission == filtro.DtEmission) &&
@@ -25,9 +25,9 @@ namespace Application.UseCases.NotaFiscalCases
             var totalTask = _repository.CountAsync(filter, cancellationToken);
             await Task.WhenAll(itemsTask, totalTask);
 
-            return new PagedResultDto<NotaFiscal>
+            return new PagedResultDto<NotaFiscalResponseDto>
             {
-                Items = itemsTask.Result,
+                Items = itemsTask.Result.Select(NotaFiscalResponseDto.From).ToList(),
                 Page = filtro.Page,
                 PageSize = filtro.PageSize,
                 Total = totalTask.Result

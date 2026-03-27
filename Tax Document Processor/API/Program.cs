@@ -1,9 +1,12 @@
 using Application;
+using Tax_Document_Processor.API.Middleware;
 using Tax_Document_Processor.Domain.Repositories;
 using Tax_Document_Processor.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 builder.Services.AddControllers();
 builder.Services.AddResponseCompression(opts => opts.EnableForHttps = true);
 builder.Services.AddSwaggerGen(c =>
@@ -33,6 +36,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "XML Processor v1"));
 }
 
+app.UseExceptionHandler();
 app.UseResponseCompression();
 app.UseHttpsRedirection();
 app.UseAuthorization();

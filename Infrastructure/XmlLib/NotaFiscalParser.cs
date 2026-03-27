@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+using System.Xml;
 using System.Xml.Linq;
 using Tax_Document_Processor.Application.Services;
 using Tax_Document_Processor.Domain.Entities;
@@ -7,9 +9,21 @@ namespace Tax_Document_Processor.Infrastructure.XmlLib
 {
     public class NotaFiscalParser : INotaFiscalParser
     {
+        private static readonly XmlReaderSettings _safeXmlSettings = new()
+        {
+            DtdProcessing = DtdProcessing.Prohibit,
+            XmlResolver = null
+        };
+
+
+        private static readonly Regex _bareAmpersand = new(@"&(?!(?:#\d+|#x[\da-fA-F]+|amp|lt|gt|quot|apos);)", RegexOptions.Compiled);
+
         public NotaFiscal Parse(string xmlContent)
         {
-            var doc = XDocument.Parse(xmlContent);
+            var sanitized = _bareAmpersand.Replace(xmlContent, "&amp;");
+            using var stringReader = new StringReader(sanitized);
+            using var xmlReader = XmlReader.Create(stringReader, _safeXmlSettings);
+            var doc = XDocument.Load(xmlReader);
             var root = doc.Root!.Name.LocalName;
 
             return root switch
