@@ -33,9 +33,10 @@ Clean Architecture with separation of concerns across four layers:
 
 | Method | Route | Description |
 |--------|-------|-------------|
-| `POST` | `/api/notafiscal` | Upload XML and save document (`201` new, `200` duplicate) |
+| `POST` | `/api/notafiscal` | Upload XML (`multipart/form-data`) and save document (`201` new, `200` duplicate) |
 | `GET` | `/api/notafiscal/{chave}` | Get document by access key |
 | `GET` | `/api/notafiscal` | List documents with filters |
+| `PUT` | `/api/notafiscal/{chave}` | Update `razaoSocial` and/or `totalValue` |
 | `DELETE` | `/api/notafiscal/{chave}` | Delete document by access key |
 
 ### Query filters for `GET /api/notafiscal`
@@ -85,6 +86,16 @@ Swagger UI available at `http://localhost:5112/swagger`.
 ```bash
 dotnet test
 ```
+
+## Error Handling
+
+All errors return a `ProblemDetails` response with no stack trace:
+
+| Scenario | Status |
+|----------|--------|
+| Invalid access key, invalid CNPJ/CPF | `400 Bad Request` |
+| Document not found | `404 Not Found` |
+| Unexpected error | `500 Internal Server Error` |
 
 ## Domain Model
 

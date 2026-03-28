@@ -51,7 +51,8 @@ namespace Tax_Document_Processor.Tests.Application.UseCases
             var result = await _useCase.ExecuteAsync(filtro);
 
             // Assert
-            result.Items.Should().BeEquivalentTo(notas);
+            var expectedItems = notas.Select(NotaFiscalResponseDto.From).ToList();
+            result.Items.Should().BeEquivalentTo(expectedItems);
             result.Page.Should().Be(2);
             result.PageSize.Should().Be(10);
             result.Total.Should().Be(42);

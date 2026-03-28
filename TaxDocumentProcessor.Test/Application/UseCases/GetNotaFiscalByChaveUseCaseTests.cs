@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NSubstitute;
+using Application.DTOs;
 using Application.UseCases.NotaFiscalCases;
 using Tax_Document_Processor.Domain.Entities;
 using Tax_Document_Processor.Domain.Repositories;
@@ -42,7 +43,7 @@ namespace Tax_Document_Processor.Tests.Application.UseCases
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().Be(nota);
+            result.Should().BeEquivalentTo(NotaFiscalResponseDto.From(nota));
         }
 
         [Test]

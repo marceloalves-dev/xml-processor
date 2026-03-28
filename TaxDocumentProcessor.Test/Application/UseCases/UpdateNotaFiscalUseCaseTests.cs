@@ -73,7 +73,8 @@ namespace Tax_Document_Processor.Tests.Application.UseCases
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().Be(nota);
+            result!.RazaoSocial.Should().Be("Nova Empresa");
+            result!.TotalValue.Should().Be("2000.00");
         }
 
         [Test]
