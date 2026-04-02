@@ -1,12 +1,14 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TaxDocumentProcessor.Application.DTOs;
 using TaxDocumentProcessor.Application.UseCases.NotaFiscalCases;
-using Microsoft.AspNetCore.Mvc;
 using TaxDocumentProcessor.Domain.ValueObjects;
 
 namespace TaxDocumentProcessor.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class NotaFiscalController : ControllerBase
     {
         private readonly SaveNotaFiscalUseCase _saveUseCase;

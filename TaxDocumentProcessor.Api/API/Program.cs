@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using TaxDocumentProcessor.Application;
 using TaxDocumentProcessor.API.Middleware;
 using TaxDocumentProcessor.Domain.Repositories;
@@ -17,7 +20,24 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1",
         Description = "REST API for processing Brazilian fiscal documents (NF-e, CT-e, NFS-e) from XML."
     });
+
 });
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        var secret = builder.Configuration["Jwt:Secret"]!;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret))
+        };
+    });
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
@@ -39,6 +59,7 @@ if (app.Environment.IsDevelopment())
 app.UseExceptionHandler();
 app.UseResponseCompression();
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

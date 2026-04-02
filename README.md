@@ -7,10 +7,10 @@ REST API for processing Brazilian fiscal documents (NF-e, CT-e, NFS-e) from XML,
 Clean Architecture with separation of concerns across four layers:
 
 ```
-├── Domain          → Entities, Value Objects, Repository interfaces
-├── Application     → Use Cases, DTOs, Service interfaces
-├── Infrastructure  → MongoDB persistence, XML parser
-└── API             → REST Controllers
+├── TaxDocumentProcessor.Domain          → Entities, Value Objects, Repository interfaces
+├── TaxDocumentProcessor.Application     → Use Cases, DTOs, Service interfaces
+├── TaxDocumentProcessor.Infrastructure  → MongoDB persistence, XML parser
+└── TaxDocumentProcessor.Api             → REST Controllers, Authentication
 ```
 
 ## Features
@@ -20,16 +20,26 @@ Clean Architecture with separation of concerns across four layers:
 - List documents with filters (CNPJ/CPF, Razão Social, emission date) and pagination
 - Delete document by access key
 - Duplicate detection on save — returns `201 Created` for new documents, `200 OK` if already exists
+- JWT Bearer authentication — all endpoints require a valid token
 - Swagger UI available at `/swagger` in development
 
 ## Tech Stack
 
 - **.NET 10** — ASP.NET Core Web API
 - **MongoDB** — document persistence
+- **JWT Bearer** — authentication via `Microsoft.AspNetCore.Authentication.JwtBearer`
 - **Swashbuckle** — Swagger UI
 - **NUnit + FluentAssertions + NSubstitute** — unit testing
 
 ## Endpoints
+
+### Authentication
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| `POST` | `/api/auth/token` | Get a JWT token — body: `{ "username": "...", "password": "..." }` |
+
+### Fiscal Documents (requires `Authorization: Bearer <token>`)
 
 | Method | Route | Description |
 |--------|-------|-------------|
@@ -58,7 +68,7 @@ Clean Architecture with separation of concerns across four layers:
 
 ### Configuration
 
-Set the MongoDB connection in `appsettings.json`:
+Set the MongoDB connection and JWT settings in `appsettings.json`:
 
 ```json
 {
@@ -66,15 +76,27 @@ Set the MongoDB connection in `appsettings.json`:
     "MongoDB": "mongodb://localhost:27017"
   },
   "MongoDB": {
-    "DatabaseName": "xml-processor"
+    "DatabaseName": "TaxDocumentProcessor"
+  },
+  "Jwt": {
+    "Secret": "your-secret-key-min-32-chars",
+    "Issuer": "TaxDocumentProcessor",
+    "Audience": "TaxDocumentProcessor",
+    "ExpirationMinutes": 60
+  },
+  "Auth": {
+    "Username": "admin",
+    "Password": "your-password"
   }
 }
 ```
 
+> **Note:** Never commit real secrets to source control. Use environment variables or a secrets manager in production.
+
 ### Running
 
 ```bash
-dotnet run --project "Tax Document Processor"
+dotnet run --project TaxDocumentProcessor.Api
 ```
 
 API available at `http://localhost:5112`.
