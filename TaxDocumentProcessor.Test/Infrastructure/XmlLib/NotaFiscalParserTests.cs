@@ -1,8 +1,8 @@
 using FluentAssertions;
-using Tax_Document_Processor.Domain.Entities;
-using Tax_Document_Processor.Infrastructure.XmlLib;
+using TaxDocumentProcessor.Domain.Entities;
+using TaxDocumentProcessor.Infrastructure.XmlLib;
 
-namespace Tax_Document_Processor.Tests.Infrastructure.XmlLib
+namespace TaxDocumentProcessor.Tests.Infrastructure.XmlLib
 {
     [TestFixture]
     public class NotaFiscalParserTests

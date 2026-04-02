@@ -1,7 +1,7 @@
-﻿using FluentAssertions;
-using Tax_Document_Processor.Domain.ValueObjects;
+using FluentAssertions;
+using TaxDocumentProcessor.Domain.ValueObjects;
 
-namespace Tax_Document_Processor.Tests.Domain.ValueObjects
+namespace TaxDocumentProcessor.Tests.Domain.ValueObjects
 {
     [TestFixture]
     public class ChaveNotaTests

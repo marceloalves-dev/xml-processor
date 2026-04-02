@@ -1,0 +1,18 @@
+using TaxDocumentProcessor.Application.UseCases.NotaFiscalCases;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace TaxDocumentProcessor.Application
+{
+    public static class DependencyInjection
+    {
+        public static IServiceCollection AddApplication(this IServiceCollection services)
+        {
+            services.AddScoped<SaveNotaFiscalUseCase>();
+            services.AddScoped<GetNotaFiscalByChaveUseCase>();
+            services.AddScoped<DeleteNotaFiscalByChaveUseCase>();
+            services.AddScoped<ListNotaFiscalUseCase>();
+            services.AddScoped<UpdateNotaFiscalUseCase>();
+            return services;
+        }
+    }
+}

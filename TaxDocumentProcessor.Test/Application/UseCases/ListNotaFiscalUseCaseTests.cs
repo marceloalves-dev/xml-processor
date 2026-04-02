@@ -1,13 +1,13 @@
-using Application.DTOs;
-using Application.UseCases.NotaFiscalCases;
+using TaxDocumentProcessor.Application.DTOs;
+using TaxDocumentProcessor.Application.UseCases.NotaFiscalCases;
 using FluentAssertions;
 using NSubstitute;
 using System.Linq.Expressions;
-using Tax_Document_Processor.Domain.Entities;
-using Tax_Document_Processor.Domain.Repositories;
-using Tax_Document_Processor.Domain.ValueObjects;
+using TaxDocumentProcessor.Domain.Entities;
+using TaxDocumentProcessor.Domain.Repositories;
+using TaxDocumentProcessor.Domain.ValueObjects;
 
-namespace Tax_Document_Processor.Tests.Application.UseCases
+namespace TaxDocumentProcessor.Tests.Application.UseCases
 {
     [TestFixture]
     public class ListNotaFiscalUseCaseTests

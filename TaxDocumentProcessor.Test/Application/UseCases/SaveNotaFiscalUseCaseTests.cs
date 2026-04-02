@@ -1,12 +1,12 @@
 using FluentAssertions;
 using NSubstitute;
-using Application.UseCases.NotaFiscalCases;
-using Tax_Document_Processor.Application.Services;
-using Tax_Document_Processor.Domain.Entities;
-using Tax_Document_Processor.Domain.Repositories;
-using Tax_Document_Processor.Domain.ValueObjects;
+using TaxDocumentProcessor.Application.UseCases.NotaFiscalCases;
+using TaxDocumentProcessor.Application.Services;
+using TaxDocumentProcessor.Domain.Entities;
+using TaxDocumentProcessor.Domain.Repositories;
+using TaxDocumentProcessor.Domain.ValueObjects;
 
-namespace Tax_Document_Processor.Tests.Application.UseCases
+namespace TaxDocumentProcessor.Tests.Application.UseCases
 {
     [TestFixture]
     public class SaveNotaFiscalUseCaseTests

@@ -19,9 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Application\Application.csproj" />
-    <ProjectReference Include="..\Domain\Domain.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\TaxDocumentProcessor.Application\TaxDocumentProcessor.Application.csproj" />
+    <ProjectReference Include="..\TaxDocumentProcessor.Domain\TaxDocumentProcessor.Domain.csproj" />
+    <ProjectReference Include="..\TaxDocumentProcessor.Infrastructure\TaxDocumentProcessor.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
