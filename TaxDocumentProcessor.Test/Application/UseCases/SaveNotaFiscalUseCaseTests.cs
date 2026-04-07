@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NSubstitute;
+using TaxDocumentProcessor.Application.Interfaces;
 using TaxDocumentProcessor.Application.UseCases.NotaFiscalCases;
 using TaxDocumentProcessor.Application.Services;
 using TaxDocumentProcessor.Domain.Entities;
@@ -13,6 +14,7 @@ namespace TaxDocumentProcessor.Tests.Application.UseCases
     {
         private INotaFiscalRepository _repository;
         private INotaFiscalParser _parser;
+        private IEventPublisher _eventPublisher;
         private SaveNotaFiscalUseCase _useCase;
 
         private const string XmlContent = "<nfe>conteudo</nfe>";
@@ -33,7 +35,8 @@ namespace TaxDocumentProcessor.Tests.Application.UseCases
         {
             _repository = Substitute.For<INotaFiscalRepository>();
             _parser = Substitute.For<INotaFiscalParser>();
-            _useCase = new SaveNotaFiscalUseCase(_repository, _parser);
+            _eventPublisher = Substitute.For<IEventPublisher>();
+            _useCase = new SaveNotaFiscalUseCase(_repository, _parser, _eventPublisher);
         }
 
         [Test]

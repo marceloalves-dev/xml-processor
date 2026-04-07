@@ -8,8 +8,8 @@ Clean Architecture with separation of concerns across four layers:
 
 ```
 ├── TaxDocumentProcessor.Domain          → Entities, Value Objects, Repository interfaces
-├── TaxDocumentProcessor.Application     → Use Cases, DTOs, Service interfaces
-├── TaxDocumentProcessor.Infrastructure  → MongoDB persistence, XML parser
+├── TaxDocumentProcessor.Application     → Use Cases, DTOs, Service interfaces, Event contracts
+├── TaxDocumentProcessor.Infrastructure  → MongoDB persistence, XML parser, RabbitMQ messaging
 └── TaxDocumentProcessor.Api             → REST Controllers, Authentication
 ```
 
@@ -22,11 +22,15 @@ Clean Architecture with separation of concerns across four layers:
 - Duplicate detection on save — returns `201 Created` for new documents, `200 OK` if already exists
 - JWT Bearer authentication — all endpoints require a valid token
 - Swagger UI available at `/swagger` in development
+- Event publishing via RabbitMQ on each new document processed
+- Async consumer persists a processing log to a separate MongoDB collection
+- Retry with exponential backoff (3 attempts) and automatic dead-letter queue on failure
 
 ## Tech Stack
 
 - **.NET 10** — ASP.NET Core Web API
 - **MongoDB** — document persistence
+- **RabbitMQ + MassTransit** — event publishing and async consumption with retry policy
 - **JWT Bearer** — authentication via `Microsoft.AspNetCore.Authentication.JwtBearer`
 - **Swashbuckle** — Swagger UI
 - **NUnit + FluentAssertions + NSubstitute** — unit testing
@@ -65,10 +69,17 @@ Clean Architecture with separation of concerns across four layers:
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
 - [MongoDB](https://www.mongodb.com/try/download/community) running locally or a connection string
+- [RabbitMQ](https://www.rabbitmq.com/download.html) running locally (or via Docker)
+
+```bash
+docker run -d -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+```
+
+RabbitMQ Management UI available at `http://localhost:15672` (default credentials: `guest` / `guest`).
 
 ### Configuration
 
-Set the MongoDB connection and JWT settings in `appsettings.json`:
+Set the MongoDB connection, JWT and RabbitMQ settings in `appsettings.json`:
 
 ```json
 {
@@ -87,6 +98,12 @@ Set the MongoDB connection and JWT settings in `appsettings.json`:
   "Auth": {
     "Username": "admin",
     "Password": "your-password"
+  },
+  "RabbitMQ": {
+    "Host": "localhost",
+    "VirtualHost": "/",
+    "Username": "guest",
+    "Password": "guest"
   }
 }
 ```
@@ -124,3 +141,9 @@ All errors return a `ProblemDetails` response with no stack trace:
 - **NotaFiscal** — abstract base entity (NF-e, CT-e, NFS-e)
 - **ChaveNota** — value object for the access key — 44 digits (NF-e/CT-e) or 50 digits (NFS-e)
 - **CnpjOrCpf** — value object that validates both CNPJ and CPF with check digit algorithm
+
+## Messaging
+
+Every new document saved successfully triggers a `DocumentProcessedEvent` published to RabbitMQ via MassTransit.
+
+The `DocumentProcessedConsumer` picks up the event and writes a `ProcessingLog` entry to the `processing_logs` MongoDB collection. If the consumer fails, MassTransit retries with exponential backoff (up to 3 attempts: 1s → 5s → 15s). After exhausting retries, the message is moved to the `document-processed_error` dead-letter queue automatically.
