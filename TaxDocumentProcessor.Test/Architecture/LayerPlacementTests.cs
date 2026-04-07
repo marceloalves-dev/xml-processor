@@ -11,7 +11,7 @@ namespace TaxDocumentProcessor.Tests.Architecture
         [Test]
         public void Controllers_ShouldResideOnly_InApiLayer()
         {
-            var result = Types
+            var types = Types
                 .InAssemblies([
                     ArchitectureConstants.DomainAssembly,
                     ArchitectureConstants.ApplicationAssembly,
@@ -19,19 +19,15 @@ namespace TaxDocumentProcessor.Tests.Architecture
                 ])
                 .That()
                 .Inherit(typeof(ControllerBase))
-                .Should()
-                .NotExist()
-                .GetResult();
+                .GetTypes();
 
-            result.IsSuccessful.Should().BeTrue(
-                because: "Controllers must only exist in the API project. Failing types: " +
-                         $"{string.Join(", ", result.FailingTypes?.Select(t => t.Name) ?? [])}");
+            types.Should().BeEmpty(because: "controllers must only exist in the API project");
         }
 
         [Test]
         public void Entities_ShouldResideIn_DomainLayer()
         {
-            var result = Types
+            var types = Types
                 .InAssemblies([
                     ArchitectureConstants.ApplicationAssembly,
                     ArchitectureConstants.InfrastructureAssembly,
@@ -39,13 +35,9 @@ namespace TaxDocumentProcessor.Tests.Architecture
                 ])
                 .That()
                 .ResideInNamespace(ArchitectureConstants.DomainEntitiesNs)
-                .Should()
-                .NotExist()
-                .GetResult();
+                .GetTypes();
 
-            result.IsSuccessful.Should().BeTrue(
-                because: "Entity types must only reside in Domain. Failing types: " +
-                         $"{string.Join(", ", result.FailingTypes?.Select(t => t.Name) ?? [])}");
+            types.Should().BeEmpty(because: "entity types must only reside in Domain");
         }
 
         [Test]
@@ -60,15 +52,14 @@ namespace TaxDocumentProcessor.Tests.Architecture
                 .GetResult();
 
             result.IsSuccessful.Should().BeTrue(
-                because: "Only interfaces are allowed in Domain.Repositories. " +
-                         "Implementations belong in Infrastructure. Failing types: " +
+                because: "only interfaces are allowed in Domain.Repositories — implementations belong in Infrastructure. Failing types: " +
                          $"{string.Join(", ", result.FailingTypes?.Select(t => t.Name) ?? [])}");
         }
 
         [Test]
         public void RepositoryImplementations_ShouldResideIn_InfrastructureLayer()
         {
-            var result = Types
+            var types = Types
                 .InAssemblies([
                     ArchitectureConstants.DomainAssembly,
                     ArchitectureConstants.ApplicationAssembly,
@@ -76,19 +67,15 @@ namespace TaxDocumentProcessor.Tests.Architecture
                 ])
                 .That()
                 .ImplementInterface(typeof(INotaFiscalRepository))
-                .Should()
-                .NotExist()
-                .GetResult();
+                .GetTypes();
 
-            result.IsSuccessful.Should().BeTrue(
-                because: "INotaFiscalRepository implementations must only exist in Infrastructure. Failing types: " +
-                         $"{string.Join(", ", result.FailingTypes?.Select(t => t.Name) ?? [])}");
+            types.Should().BeEmpty(because: "INotaFiscalRepository implementations must only exist in Infrastructure");
         }
 
         [Test]
         public void UseCases_ShouldResideIn_ApplicationLayer()
         {
-            var result = Types
+            var types = Types
                 .InAssemblies([
                     ArchitectureConstants.DomainAssembly,
                     ArchitectureConstants.InfrastructureAssembly,
@@ -96,13 +83,9 @@ namespace TaxDocumentProcessor.Tests.Architecture
                 ])
                 .That()
                 .ResideInNamespace(ArchitectureConstants.AppUseCasesNs)
-                .Should()
-                .NotExist()
-                .GetResult();
+                .GetTypes();
 
-            result.IsSuccessful.Should().BeTrue(
-                because: "Use case types must only reside in Application. Failing types: " +
-                         $"{string.Join(", ", result.FailingTypes?.Select(t => t.Name) ?? [])}");
+            types.Should().BeEmpty(because: "use case types must only reside in Application");
         }
     }
 }
