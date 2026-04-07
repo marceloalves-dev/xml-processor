@@ -50,13 +50,6 @@ namespace TaxDocumentProcessor.API.Controllers
             return Ok(nota);
         }
 
-        [HttpDelete("{chave}")]
-        public async Task<IActionResult> DeleteByKeyAsync(string chave, CancellationToken cancellationToken)
-        {
-            await _deleteUseCase.ExecuteAsync(new ChaveNota(chave), cancellationToken);
-            return NoContent();
-        }
-
         [HttpGet]
         public async Task<IActionResult> ListAsync([FromQuery] NotaFiscalFilterDto filtro, CancellationToken cancellationToken)
         {
@@ -74,5 +67,13 @@ namespace TaxDocumentProcessor.API.Controllers
 
             return Ok(nota);
         }
+
+        [HttpDelete("{chave}")]
+        public async Task<IActionResult> DeleteByKeyAsync(string chave, CancellationToken cancellationToken)
+        {
+            await _deleteUseCase.ExecuteAsync(new ChaveNota(chave), cancellationToken);
+            return NoContent();
+        }
+        
     }
 }
